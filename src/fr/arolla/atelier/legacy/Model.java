@@ -1,59 +1,64 @@
 package fr.arolla.atelier.legacy;
 
+import java.util.UUID;
+
 /**
  * models
  */
 public class Model {
 
 
-    public static class Object {
-        private long id;
+    public static class BddEntity {
+        private String id;
 
-        public long getId() {
+        public String getId() {
             return id;
         }
 
-        public void setId(long id) {
+        public void setId(String id) {
             this.id = id;
         }
     }
-    public static class Named extends Object {
-        private String name;
+    public static class Labeled extends BddEntity {
+        private String label;
 
 
-        public String getName() {
-            return name;
+        public String getLabel() {
+            return label;
         }
 
         public void setName(String name) {
-            this.name = name;
+            this.label = name;
         }
     }
-    public static class Book extends Named {
-        private Author author;
+    public static class Fact extends Labeled {
+        private Date date;
 
         public String toString(){
-            return getName().concat(", ").concat(author.toString());
+            return date.toString().concat(" - ").concat(getLabel());
         }
 
-        public void setAuthor(Author author) {
-            this.author = author;
+        public void setDate(Date date) {
+            this.date = date;
+        }
+
+        public Date getDate() {
+            return date;
+        }
+
+        @Override
+        public boolean equals(Object o){
+            return (getLabel().equals(((Fact)o).getLabel()) && getDate().getLabel().equals(((Fact)o).getDate().getLabel()));
         }
     }
 
-    public static class Author extends Named {
-        private String prename;
+    public static class Date extends Labeled {
 
-        public String getPrename() {
-            return prename;
+        public Date(String date){
+           setName(date);
         }
-
-        public void setPrename(String prename) {
-            this.prename = prename;
-        }
-
         public String toString(){
-            return getName().concat(" ").concat(prename);
+            return getLabel();
         }
 
     }

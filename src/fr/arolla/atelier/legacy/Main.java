@@ -6,65 +6,56 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.*;
 import java.util.List;
 
 public class Main {
 
     public static void main(String[] args) {
-        StringDistance.testDistance();
-        Model.Book[] bs = new Model.Book[2000];
-        new BookManager().maj("").toArray(bs);
+        FactUtils.testDistance();
+        Model.Fact[] bs = new Model.Fact[2000];
         showList(bs) ;
     }
 
 
 
-    public static void showList(Model.Book[] data){
+    public static void showList(Model.Fact[] data){
 
-        final JList list = new JList(data);
-        list.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-        list.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-        list.setVisibleRowCount(-1);
+        final JLabel fact=new JLabel();
+        final JLabel related=new JLabel();
+        final JLabel factLabel=new JLabel();
+        final JLabel relatedLabel=new JLabel();
 
-        final JScrollPane listScroller = new JScrollPane(list);
-        listScroller.setPreferredSize(new Dimension(250, 80));
+        factLabel.setText("Fait marquant");
+        relatedLabel.setText("Fait en rapport");
+
+
+
         final JTextField f=new JTextField();
         f.setMaximumSize(new Dimension(200,75));
-        f.getDocument().addDocumentListener(new DocumentListener() {
 
+        f.addActionListener(new ActionListener() {
             @Override
-            public void insertUpdate(DocumentEvent e) {
-                List<Model.Book> bs = new BookManager().maj(f.getText());
-                list.setListData(bs.toArray());
+            public void actionPerformed(ActionEvent e) {
+                try{
+                    Manager manager = new Manager();
+                    Model.Fact factFinded = manager.get(((JTextField) e.getSource()).getText());
+                    fact.setText(factFinded.toString());
+                    related.setText(manager.related(factFinded).toString());
+                }catch(Exception ex){
+                    ex.printStackTrace();
+                    System.exit(0);
+                }
             }
+        });
 
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                List<Model.Book> bs = new BookManager().maj(f.getText());
-                list.setListData(bs.toArray());
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                List<Model.Book> bs = new BookManager().maj(f.getText());
-                list.setListData(bs.toArray());
-            }
-        }) ;
-                f.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        List<Model.Book> bs = new BookManager().maj(((JTextField) e.getSource()).getText());
-                        list.setListData(bs.toArray());
-                    }
-                });
         JPanel p = new JPanel();
         p.setLayout(new BoxLayout(p, BoxLayout.PAGE_AXIS));
         JFrame frame = new JFrame();
-        p.add(listScroller,0);
-        p.add(f, 1);
+        p.add(factLabel,0);
+        p.add(fact,1);
+        p.add(relatedLabel,2);
+        p.add(related,3);
+        p.add(f, 4);
         frame.add(p);
         frame.setSize(400, 300);
         frame.setVisible(true);
